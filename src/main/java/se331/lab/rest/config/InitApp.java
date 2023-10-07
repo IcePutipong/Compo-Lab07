@@ -1,5 +1,6 @@
 package se331.lab.rest.config;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -16,8 +17,18 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     final OrganizerRepository organizerRepository;
 
     @Override
+    @Transactional
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        eventRepository.save(Event.builder()
+        Organizer org1, org2, org3;
+        org1 = organizerRepository.save(Organizer.builder()
+                .name("CAMT").build());
+        org2 = organizerRepository.save(Organizer.builder()
+                .name("CMU").build());
+        org3 = organizerRepository.save(Organizer.builder()
+                .name("ChaingMai").build());
+
+        Event tempEvent;
+        tempEvent = eventRepository.save(Event.builder()
                 .category("Academic")
                 .title("Midterm Exam")
                 .description("A time for taking the exam")
@@ -25,8 +36,11 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
                 .date("3rd Sept")
                 .time("3.00-4.00 pm.")
                 .petAllowed(false)
-                .organizer("CAMT").build());
-        eventRepository.save(Event.builder()
+                .build());
+        tempEvent.setOrganizer(org1);
+        org1.getOwnEvent().add(tempEvent);
+
+        tempEvent = eventRepository.save(Event.builder()
                 .category("Academic")
                 .title("Commencement Day")
                 .description("A time for celebration")
@@ -34,8 +48,11 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
                 .date("21th Jan")
                 .time("8.00am-4.00 pm.")
                 .petAllowed(false)
-                .organizer("CMU").build());
-        eventRepository.save(Event.builder()
+                .build());
+        tempEvent.setOrganizer(org1);
+        org1.getOwnEvent().add(tempEvent);
+
+        tempEvent = eventRepository.save(Event.builder()
                 .category("Cultural")
                 .title("Loy Krathong")
                 .description("A time for Krathong")
@@ -43,8 +60,11 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
                 .date("21th Nov")
                 .time("8.00-10.00 pm.")
                 .petAllowed(false)
-                .organizer("Chiang Mai").build());
-        eventRepository.save(Event.builder()
+                .build());
+        tempEvent.setOrganizer(org2);
+        org2.getOwnEvent().add(tempEvent);
+
+        tempEvent = eventRepository.save(Event.builder()
                 .category("Cultural")
                 .title("Songkran")
                 .description("Let's Play Water")
@@ -52,38 +72,40 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
                 .date("13th April")
                 .time("10.00am - 6.00 pm.")
                 .petAllowed(true)
-                .organizer("Chiang Mai Municipality").build());
+                .build());
+        tempEvent.setOrganizer(org3);
+        org3.getOwnEvent().add(tempEvent);
 
-        organizerRepository.save(Organizer.builder()
-                .id(496L)
-                .name("Jonny Wu")
-                .address("123 Main St, New York")
-                .build());
-        organizerRepository.save(Organizer.builder()
-                .id(655L)
-                .name("Cocolia Marhier")
-                .address("456 Elm St, Los Angeles")
-                .build());
-        organizerRepository.save(Organizer.builder()
-                .id(452L)
-                .name("Chen Long Lee")
-                .address("789 Oak Ave, Chicago")
-                .build());
-        organizerRepository.save(Organizer.builder()
-                .id(426L)
-                .name("Kat Laydee")
-                .address("489 Main St, New York")
-                .build());
-        organizerRepository.save(Organizer.builder()
-                .id(615L)
-                .name("Fern Pollin")
-                .address("896 Elm St, Los Angeles")
-                .build());
-        organizerRepository.save(Organizer.builder()
-                .id(444L)
-                .name("Carey Wales")
-                .address("786 Oak Ave, Chicago")
-                .build());
+//        organizerRepository.save(Organizer.builder()
+//                .id(496L)
+//                .name("Jonny Wu")
+//                .address("123 Main St, New York")
+//                .build());
+//        organizerRepository.save(Organizer.builder()
+//                .id(655L)
+//                .name("Cocolia Marhier")
+//                .address("456 Elm St, Los Angeles")
+//                .build());
+//        organizerRepository.save(Organizer.builder()
+//                .id(452L)
+//                .name("Chen Long Lee")
+//                .address("789 Oak Ave, Chicago")
+//                .build());
+//        organizerRepository.save(Organizer.builder()
+//                .id(426L)
+//                .name("Kat Laydee")
+//                .address("489 Main St, New York")
+//                .build());
+//        organizerRepository.save(Organizer.builder()
+//                .id(615L)
+//                .name("Fern Pollin")
+//                .address("896 Elm St, Los Angeles")
+//                .build());
+//        organizerRepository.save(Organizer.builder()
+//                .id(444L)
+//                .name("Carey Wales")
+//                .address("786 Oak Ave, Chicago")
+//                .build());
     }
 
 }
