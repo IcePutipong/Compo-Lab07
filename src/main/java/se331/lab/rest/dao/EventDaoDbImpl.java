@@ -21,9 +21,20 @@ public class EventDaoDbImpl implements EventDao{
     }
 
     @Override
-    public Page<Event> getEvents(Integer pageSize, Integer page) {
-        return eventRepository.findAll(PageRequest.of(page- 1, pageSize));
+    public Page<Event> getEvents(Integer pageSize, Integer page){
+        // Determine the total number of events in the database.
+        long totalEvents = eventRepository.count();
+
+        // If pageSize is null, set it to the total number of events.
+        pageSize = pageSize == null ? (int) totalEvents : pageSize;
+
+        // If page is null, default to fetching the first page.
+        page = page == null ? 0 : page - 1; // Convert to 0-based for Spring's PageRequest.
+
+        // Use the PageRequest object to fetch the desired page of events from the database.
+        return eventRepository.findAll(PageRequest.of(page, pageSize));
     }
+
 
     @Override
     public Event getEvent(Long id) {
