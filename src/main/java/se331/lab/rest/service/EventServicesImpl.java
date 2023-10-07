@@ -1,10 +1,13 @@
 package se331.lab.rest.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import se331.lab.rest.dao.EventDao;
+import se331.lab.rest.dao.OrganizerDao;
 import se331.lab.rest.entity.Event;
+import se331.lab.rest.entity.Organizer;
 
 import java.util.List;
 
@@ -13,6 +16,7 @@ import java.util.List;
 public class EventServicesImpl implements EventService{
 
     final EventDao eventDao;
+    final OrganizerDao organizerDao;
     @Override
     public Integer getEventSize() {
         return eventDao.getEventSize();
@@ -29,7 +33,12 @@ public class EventServicesImpl implements EventService{
     }
 
     @Override
+    @Transactional
     public Event save(Event event){
+        Organizer organizer =
+                organizerDao.findById(event.getOrganizer().getId()).orElse(null);
+        event.setOrganizer(organizer);
+        organizer.getOwnEvent().add(event);
         return  eventDao.save(event);
     }
 }
