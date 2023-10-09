@@ -49,7 +49,7 @@ public class EventDaoDbImpl implements EventDao{
 
     @Override
     public Page<Event> getEvents(String title, Pageable page) {
-        return eventRepository.findByTitle(title,page);
+        return eventRepository.findByTitleContaining(title,page);
     }
 
 
