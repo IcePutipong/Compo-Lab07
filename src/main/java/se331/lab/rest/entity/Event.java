@@ -3,6 +3,7 @@ package se331.lab.rest.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -25,6 +26,7 @@ public class Event {
     Boolean petAllowed;
     @ManyToOne
     Organizer organizer;
-    @ManyToMany(mappedBy = "eventHistory")
-    List<Participant> participants;
+    @ManyToMany(mappedBy = "eventHistory", cascade = CascadeType.PERSIST)
+            @Builder.Default
+    List<Participant> participants = new ArrayList<>();
 }
