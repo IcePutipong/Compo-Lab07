@@ -17,7 +17,7 @@ public class OrganizerDTO {
     String name;
     String address;
     List<OrganizerOwnEventsDTO> ownEvents = new ArrayList<>();
-    String images;
+    List<String> images;
 
 
 }
