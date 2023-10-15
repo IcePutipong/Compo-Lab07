@@ -1,17 +1,25 @@
 package se331.lab.rest.config;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import se331.lab.rest.entity.Event;
 import se331.lab.rest.entity.Organizer;
 import se331.lab.rest.entity.Participant;
 import se331.lab.rest.repository.EventRepository;
 import se331.lab.rest.repository.OrganizerRepository;
 import se331.lab.rest.repository.ParticipantRepository;
+import se331.lab.rest.security.user.Role;
+import se331.lab.rest.security.user.User;
+import se331.lab.rest.security.user.UserRepository;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -20,6 +28,7 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     final EventRepository eventRepository;
     final OrganizerRepository organizerRepository;
     final ParticipantRepository participantRepository;
+    final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -108,37 +117,53 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         par2.getEventHistory().add(tempEvent);
         par3.getEventHistory().add(tempEvent);
         par5.getEventHistory().add(tempEvent);
-
-//        organizerRepository.save(Organizer.builder()
-//                .id(496L)
-//                .name("Jonny Wu")
-//                .address("123 Main St, New York")
-//                .build());
-//        organizerRepository.save(Organizer.builder()
-//                .id(655L)
-//                .name("Cocolia Marhier")
-//                .address("456 Elm St, Los Angeles")
-//                .build());
-//        organizerRepository.save(Organizer.builder()
-//                .id(452L)
-//                .name("Chen Long Lee")
-//                .address("789 Oak Ave, Chicago")
-//                .build());
-//        organizerRepository.save(Organizer.builder()
-//                .id(426L)
-//                .name("Kat Laydee")
-//                .address("489 Main St, New York")
-//                .build());
-//        organizerRepository.save(Organizer.builder()
-//                .id(615L)
-//                .name("Fern Pollin")
-//                .address("896 Elm St, Los Angeles")
-//                .build());
-//        organizerRepository.save(Organizer.builder()
-//                .id(444L)
-//                .name("Carey Wales")
-//                .address("786 Oak Ave, Chicago")
-//                .build());
+        addUser();
+            org1.setUser(user1);
+            user1.setOrganizer(org1);
+            org2.setUser(user2);
+            user2.setOrganizer(org2);
+            org3.setUser(user3);
+            user3.setOrganizer(org3);
     }
+    User user1, user2, user3;
+    private void addUser() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        user1 = User.builder()
+                .username("admin")
+                .password(encoder.encode("admin"))
+                .firstname("admin")
+                .lastname("admin")
+                .email("admin@admin.com")
+                .enabled(true)
+                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01, 01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .build();
 
+        user2 = User.builder()
+                .username("user")
+                .password(encoder.encode("user"))
+                .firstname("user")
+                .lastname("user")
+                .email("enabled@user.com")
+                .enabled(true)
+                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01, 01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .build();
+
+        user3 = User.builder()
+                .username("disableUser")
+                .password(encoder.encode("disableUser"))
+                .firstname("disableUser")
+                .lastname("disableUser")
+                .email("disableUser@user.com")
+                .enabled(false)
+                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01, 01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .build();
+
+
+        user1.getRoles().add(Role.ROLE_ADMIN);
+        user2.getRoles().add(Role.ROLE_DISTRIBUTOR);
+        user3.getRoles().add(Role.ROLE_DISTRIBUTOR);
+        userRepository.save(user1);
+        userRepository.save(user2);
+        userRepository.save(user3);
+    }
 }
