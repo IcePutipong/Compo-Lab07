@@ -32,16 +32,15 @@ public class SecurityConfiguration {
     http
             .csrf((crsf) -> crsf.disable())
             .authorizeHttpRequests((authorize) -> {
-                authorize.requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/events").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/events").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/organizers").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/organizers").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/uploadimage").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated();
-
-
+              authorize.requestMatchers("/api/v1/auth/**").permitAll()
+                      .requestMatchers(HttpMethod.GET, "/events").permitAll()
+                      .requestMatchers(HttpMethod.POST, "/events").hasRole("ADMIN")
+                      .requestMatchers(HttpMethod.GET, "/organizers").permitAll()
+                      .requestMatchers(HttpMethod.POST, "/organizers").hasRole("ADMIN")
+                      .requestMatchers(HttpMethod.POST, "/uploadimage").permitAll()
+                      .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                      .anyRequest()
+                      .authenticated();
             })
 
             .sessionManagement((session) ->{
