@@ -1,0 +1,69 @@
+name: Deploy to Aws Docker on merge prod
+'on' :
+  push:
+    branches:
+      - prod
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: setup java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      -
+        name: run maven
+        run: |
+          mvn clean install -DskipTests -B
+          mkdir -p target/dependency && (cd target/dependency; unzip ../*.jar)
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      -
+        name: Build and Push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tag: putipongsailen/se331-backend:latest
+      -
+        name: copy file via ssh password
+        uses: appleboy/scp-action-@v0.1.4
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          port : 22
+          source: "docker-compose-prod.yml"
+          target: "/home/ubuntu/backend"
+      -
+        name: docker compose
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST_SERVER }}
+          username: ${{ secrets.HOST_USER_NAME }}
+          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd/home/ubuntu/backend
+            echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUN_USERNAME }} --password-stdin
+            mv docker-compose-prod.yml docker-compose-yml
+            docker compose down
+            docker compose pull 
+            docker compose up -d
+            rm -rf /home/ubuntu/backend
+            
