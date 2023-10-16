@@ -1,23 +1,25 @@
-name: Deploy to Aws Docker on merge prod
-'on' :
+name: deploy to aws
+on:
   push:
     branches:
       - prod
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
     steps:
       -
-        name: Checkout
+        name: checkout
         uses: actions/checkout@v2
       -
-        name: setup java
+        name: setup Java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'adopt'
       -
-        name: run maven
+        name: run Maven
         run: |
           mvn clean install -DskipTests -B
           mkdir -p target/dependency && (cd target/dependency; unzip ../*.jar)
@@ -34,19 +36,19 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       -
-        name: Build and Push
+        name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tag: putipongsailen/se331-backend:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/se331-backend:latest
       -
-        name: copy file via ssh password
+        name: Copy file via ssh password
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.HOST_SERVER }}
-          username: ${{ secrets.HOST_USER_NAME }}
-          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          username: ${{ secrets.HOST_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           source: "docker-compose-prod.yml"
           target: "/home/ubuntu/backend"
@@ -55,15 +57,15 @@ jobs:
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.HOST_SERVER }}
-          username: ${{ secrets.HOST_USER_NAME }}
-          key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
+          username: ${{ secrets.HOST_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
-            cd/home/ubuntu/backend
-            echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUN_USERNAME }} --password-stdin
-            mv docker-compose-prod.yml docker-compose-yml
+            export DOCKER_HUB_USERNAME=${{ secrets.DOCKER_HUB_USERNAME }}
+            cd /home/ubuntu/backend
+            echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+            mv docker-compose-prod.yml docker-compose.yml
             docker compose down
-            docker compose pull 
+            docker compose pull
             docker compose up -d
             rm -rf /home/ubuntu/backend
-            
