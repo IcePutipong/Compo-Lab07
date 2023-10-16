@@ -1,4 +1,4 @@
-FROM openjdk:20-alpine
+FROM openjdk:20
 RUN addgroup -S spring && adduser -S spring -G spring
 EXPOSE 8080
 
