@@ -14,7 +14,7 @@
     <name>331-BackEnd</name>
     <description>331-BackEnd</description>
     <properties>
-        <java.version>20</java.version>
+        <java.version>17</java.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
     </properties>
     <dependencies>
