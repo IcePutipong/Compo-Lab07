@@ -1,4 +1,4 @@
-FROM openjdk:20
+FROM openjdk:17-alpine
 RUN addgroup -S spring && adduser -S spring -G spring
 EXPOSE 8080
 
@@ -10,4 +10,3 @@ COPY ${DEPENDENCY}/BOOT-INF/classes /app
 
 ENTRYPOINT  [ "java","-Dspring.profiles.active=${JAVA_PROFILE}",\
             "-cp", "app:app/lib/*", "se331.lab.rest.Application" ]
-
