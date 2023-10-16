@@ -42,7 +42,7 @@ jobs:
           tag: putipongsailen/se331-backend:latest
       -
         name: copy file via ssh password
-        uses: appleboy/scp-action-@v0.1.4
+        uses: aappleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.HOST_SERVER }}
           username: ${{ secrets.HOST_USER_NAME }}
