@@ -21,7 +21,7 @@ public class Application {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("3.90.234.89:8001/")
+                        .allowedOrigins("http://3.90.234.89:8001/")
                         .exposedHeaders("x-total-count")
                         .allowedOrigins("*");
 
