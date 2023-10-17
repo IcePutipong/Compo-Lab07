@@ -17,7 +17,7 @@ services:
   backend:
     image: ${DOCKER_HUB_USERNAME}/se331-backend:latest
     ports:
-      - "8999:8080"
+      - "8100:8080"
     environment:
       - JAVA_PROFILE=prod,db
     depends_on:
