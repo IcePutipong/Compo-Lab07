@@ -4,16 +4,20 @@ services:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: password
+    restart: always
+
   phpmyadmin:
     image: phpmyadmin
     ports:
-      - 9000:80
+      - "9000:80"
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: password
+    restart: always
+
   backend:
     image: ${DOCKER_HUB_USERNAME}/se331-backend:latest
     ports:
