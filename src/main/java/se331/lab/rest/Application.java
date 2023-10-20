@@ -22,7 +22,7 @@ public class Application {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:3000/")
-                        .allowedOrigins("http://44.211.222.57:8100/")
+                        .allowedOrigins("http://34.239.109.146:8100/")
                         .exposedHeaders("x-total-count")
                         .allowedOrigins("*");
 
